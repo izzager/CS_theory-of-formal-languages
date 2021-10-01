@@ -20,9 +20,11 @@ public class LexAnalysis {
 
         EState state = EState.S;
         boolean add;
+        EState prevState = EState.S;
 
         while (state != EState.E && state != EState.F) {
             add = true;
+            prevState = state;
 
             switch (state) {
 
@@ -147,7 +149,8 @@ public class LexAnalysis {
                 addLex(lexema, strIndex);
                 lexema = "";
             }
-            if (state == EState.Ai || state == EState.Ac || state == EState.As || state == EState.Bs || state == EState.Cs) {
+            if (state == EState.Ai || state == EState.Ac || state == EState.As
+                    || state == EState.Bs || state == EState.Cs || state == EState.Gs) {
                 lexema = lexema + str;
             }
             if (state != EState.E && state != EState.F && strIndex < text.length()) {
@@ -162,33 +165,51 @@ public class LexAnalysis {
     }
 
     private void addLex(String lexema, int index) {
-        if (lexema.equals("do")) {
-            lexes.add(new Lex(ELexType.lDo, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("loop")) {
-            lexes.add(new Lex(ELexType.lLoop, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("while")) {
-            lexes.add(new Lex(ELexType.lWhile, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("input")) {
-            lexes.add(new Lex(ELexType.lInput, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("output")) {
-            lexes.add(new Lex(ELexType.lOutput, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("and")) {
-            lexes.add(new Lex(ELexType.lAnd, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("or")) {
-            lexes.add(new Lex(ELexType.lOr, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("<") || lexema.equals(">") || lexema.equals("<>") || lexema.equals("==")) {
-            lexes.add(new Lex(ELexType.lRel, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("+") || lexema.equals("-") || lexema.equals("*") || lexema.equals("/")) {
-            lexes.add(new Lex(ELexType.lAo, index - lexema.length() - 1, lexema));
-        } else if (lexema.equals("=")) {
-            lexes.add(new Lex(ELexType.lAs, index - lexema.length() - 1, lexema));
-        } else {
-            try {
-                Integer.parseInt(lexema);
-                lexes.add(new Lex(ELexType.lConst, index - lexema.length() - 1, lexema));
-            } catch (NumberFormatException ex) {
-                lexes.add(new Lex(ELexType.lVar, index - lexema.length() - 1, lexema));
-            }
+        switch (lexema) {
+            case "do":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lDo, index - lexema.length() - 1, lexema));
+                break;
+            case "loop":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lLoop, index - lexema.length() - 1, lexema));
+                break;
+            case "while":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lWhile, index - lexema.length() - 1, lexema));
+                break;
+            case "input":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lInput, index - lexema.length() - 1, lexema));
+                break;
+            case "output":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lOutput, index - lexema.length() - 1, lexema));
+                break;
+            case "and":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lAnd, index - lexema.length() - 1, lexema));
+                break;
+            case "or":
+                lexes.add(new Lex(ELexCategory.KeyWord, ELexType.lOr, index - lexema.length() - 1, lexema));
+                break;
+            case "<":
+            case ">":
+            case "<>":
+            case "==":
+                lexes.add(new Lex(ELexCategory.SpecialSymbol, ELexType.lRel, index - lexema.length() - 1, lexema));
+                break;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+                lexes.add(new Lex(ELexCategory.SpecialSymbol, ELexType.lAo, index - lexema.length() - 1, lexema));
+                break;
+            case "=":
+                lexes.add(new Lex(ELexCategory.SpecialSymbol, ELexType.lAs, index - lexema.length() - 1, lexema));
+                break;
+            default:
+                try {
+                    Integer.parseInt(lexema);
+                    lexes.add(new Lex(ELexCategory.Constanta, ELexType.lConst, index - lexema.length() - 1, lexema));
+                } catch (NumberFormatException ex) {
+                    lexes.add(new Lex(ELexCategory.Identifier, ELexType.lVar, index - lexema.length() - 1, lexema));
+                }
+                break;
         }
     }
 
@@ -208,7 +229,19 @@ public class LexAnalysis {
                 .collect(Collectors.groupingBy(Lex::getContent, LinkedHashMap::new, Collectors.toList()))
                 .values()
                 .stream()
-                .map(lexList -> new Lex(ELexType.lVar, lexList.get(0).getPos(), lexList.get(0).getContent()))
+                .map(lexList -> new Lex(ELexCategory.Identifier, ELexType.lVar, lexList.get(0).getPos(), lexList.get(0).getContent()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Lex> getSpecialSymbols() {
+        return  lexes.stream()
+                .filter(lex -> lex.getELexCategory().equals(ELexCategory.SpecialSymbol))
+                .collect(Collectors.toList());
+    }
+
+    public List<Lex> getKeyWords() {
+        return  lexes.stream()
+                .filter(lex -> lex.getELexCategory().equals(ELexCategory.KeyWord))
                 .collect(Collectors.toList());
     }
 

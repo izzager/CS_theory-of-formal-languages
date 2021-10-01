@@ -13,6 +13,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Lex {
 
+    private ELexCategory eLexCategory;
+
     private ELexType eLexType;
 
     private int pos;
@@ -21,6 +23,7 @@ public class Lex {
 
     @Override
     public String toString() {
-        return "Lex{" + "eLexType=" + eLexType + ", pos=" + pos + ", content='" + content + '\'' + '}';
+        return "Lex{" + "eLexCategory=" + eLexCategory +", eLexType="
+                + eLexType + ", pos=" + pos + ", content='" + content + '\'' + '}';
     }
 }

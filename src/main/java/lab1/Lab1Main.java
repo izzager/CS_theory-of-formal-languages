@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Lab1Main {
 
-    //do a = a * 2 loop while a < 100 and b == 25
+    //do a = a * 2 loop while a < 100 and b == 10
     //while a < b and b <= c do b=b+c-20 end
 
     public static void main(String[] args) {
@@ -25,6 +25,15 @@ public class Lab1Main {
 
         System.out.println("Список идентификаторов: ");
         lexAnalysis.getVars().forEach(System.out::println);
+        System.out.println();
+
+        System.out.println("Список ключевых слов: ");
+        lexAnalysis.getKeyWords().forEach(System.out::println);
+        System.out.println();
+
+        System.out.println("Список специальных символов: ");
+        lexAnalysis.getSpecialSymbols().forEach(System.out::println);
+        System.out.println();
 
         if (result) {
             System.out.println("Текст соответствует правилам.");
