@@ -34,6 +34,7 @@ public class KNAutomat {
 
     private void changeState(Character currentSymbol) {
         Set<String> previousStates = new LinkedHashSet<>(currentStates);
+        currentStates = new LinkedHashSet<>();
         previousStates.forEach(previousState -> {
             List<String> statesForSymb = stateTable.get(previousState)
                     .stream()
