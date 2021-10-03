@@ -23,7 +23,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.next();
         boolean isAccepted = kneAutomat.work(input);
-        System.out.println("Множество состояний в конце работы: " + kneAutomat.getCurrentStates());
+        System.out.println("\nМножество состояний в конце работы: " + kneAutomat.getCurrentStates());
         if (isAccepted) {
             System.out.println("Строка принимается");
         } else {

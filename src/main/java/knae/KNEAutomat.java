@@ -35,6 +35,8 @@ public class KNEAutomat {
     private void changeState(Character currentSymbol) {
         Set<String> previousStates = new LinkedHashSet<>(currentStates);
         currentStates = new LinkedHashSet<>();
+        System.out.println("\nТекущий символ: " + currentSymbol + ". ");
+
         previousStates.forEach(previousState -> {
             List<String> statesForSymb = stateTable.get(previousState)
                     .stream()
@@ -43,41 +45,63 @@ public class KNEAutomat {
                     .findFirst()
                     .get();
             currentStates.addAll(statesForSymb);
-            if (stateTable.get(previousState).stream()
-                    .filter(statesForSymbol -> statesForSymbol.getSymbol().equals('e'))
-                    .findFirst()
-                    .get().getStates().size() > 0) {
-                epsilonTransit(currentSymbol, previousState);
+            if (isAbleEpsTransition(statesForSymb.get(0))) {
+                System.out.println("Состояния " + previousStates + " -> " + currentStates);
+                System.out.println("Начинаем е-переход: ");
+                epsilonTransit(currentSymbol, statesForSymb.get(0));
             }
         });
-        System.out.println("Текущий символ: " + currentSymbol + ". " +
-                "Состояния " + previousStates + " -> " + currentStates);
+
+        System.out.println("Состояния " + previousStates + " -> " + currentStates);
+    }
+
+    private boolean isAbleEpsTransition(String previousState) {
+        return getStatesForEps(previousState).getStates().size() > 0;
     }
 
     private void epsilonTransit(Character currentSymbol, String previousState) {
-        StatesForSymbol e = stateTable.get(previousState).stream()
-                .filter(statesForSymbol -> statesForSymbol.getSymbol().equals('e'))
-                .findFirst()
-                .get();
+        StatesForSymbol e = getStatesForEps(previousState);
+        printInfoAndChangeState(currentSymbol, e, previousState);
+
+        boolean endOfEpsTransition = false;
+        while (!endOfEpsTransition) {
+            for (String curSt : currentStates) {
+                e = getStatesForEps(curSt);
+                if (e.getStates().size() > 0) {
+                    printInfoAndChangeState(currentSymbol, e, curSt);
+                }
+            }
+            endOfEpsTransition = checkIfEndOfEpsTransition();
+        }
+    }
+
+    private boolean checkIfEndOfEpsTransition() {
+        StatesForSymbol e;
+        boolean endOfEpsTransition = false;
+        for (String st : currentStates) {
+            e = getStatesForEps(st);
+            if (e.getStates().size() == 0) {
+                endOfEpsTransition = true;
+            } else {
+                endOfEpsTransition = false;
+                break;
+            }
+        }
+        return endOfEpsTransition;
+    }
+
+    private void printInfoAndChangeState(Character currentSymbol, StatesForSymbol e, String curSt) {
         System.out.println("e-переход для символа " + currentSymbol + ": " +
-                previousState + " -> " + e.getStates());
-        currentStates.remove(previousState);
+                curSt + " -> " + e.getStates());
+        currentStates.remove(curSt);
         currentStates.addAll(e.getStates());
     }
 
-//    private void epsilonTransit(String previousState) {
-//        Set<String> previousStates = new LinkedHashSet<>();
-//        previousStates.add(previousState);
-//        Set<String> newStates = new LinkedHashSet<>();
-//        while (!newSt.equals(prev)) {
-//            prev = newSt;
-//            stateTable.get(newSt).stream()
-//                    .filter(statesForSymbol -> statesForSymbol.getSymbol().equals('e'))
-//                    .findFirst()
-//                    .isPresent();
-//            System.out.println("e-переход: " + prev + " -> " + newSt);
-//        }
-//        currentStates.add(newSt);
-//    }
+    private StatesForSymbol getStatesForEps(String curSt) {
+        return stateTable.get(curSt).stream()
+                .filter(statesForSymbol -> statesForSymbol.getSymbol().equals('e'))
+                .findFirst()
+                .get();
+    }
 
 }
