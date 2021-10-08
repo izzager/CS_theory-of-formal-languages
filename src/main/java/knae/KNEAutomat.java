@@ -64,12 +64,22 @@ public class KNEAutomat {
         printInfoAndChangeState(currentSymbol, e, previousState);
 
         boolean endOfEpsTransition = false;
+        Set<String> statesSet = new HashSet<>(); //поиск циклов
         while (!endOfEpsTransition) {
             for (String curSt : currentStates) {
                 e = getStatesForEps(curSt);
                 if (e.getStates().size() > 0) {
                     printInfoAndChangeState(currentSymbol, e, curSt);
                 }
+                boolean isAdded = statesSet.addAll(e.getStates());
+                System.out.println(statesSet);
+                if (!isAdded) {
+                    endOfEpsTransition = true;
+                    break;
+                }
+            }
+            if (endOfEpsTransition) {
+                break;
             }
             endOfEpsTransition = checkIfEndOfEpsTransition();
         }
