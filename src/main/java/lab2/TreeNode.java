@@ -2,6 +2,7 @@ package lab2;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class TreeNode<T> {
 
     public TreeNode(T data) {
         this.data = data;
-        this.children = new LinkedList<TreeNode<T>>();
+        this.children = new LinkedList<>();
     }
 
     public TreeNode<T> addChild(T child) {
@@ -30,6 +31,17 @@ public class TreeNode<T> {
         }
         this.children.add(childNode);
         return childNode;
+    }
+
+    public void traverseTree() {
+        List<TreeNode<T>> q = new ArrayList<>();
+        q.add(this);
+        while(!q.isEmpty()) {
+            TreeNode<T> elem = q.get(0);
+            System.out.println(elem.getData());
+            q.addAll(elem.getChildren());
+            q.remove(0);
+        }
     }
     
 }

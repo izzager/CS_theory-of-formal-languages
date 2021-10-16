@@ -30,6 +30,12 @@ public class Lab2Main {
         } else {
             System.out.println("Синтаксический анализ произошел с ошибками.");
         }
+        regressionFall.getTree().traverseTree();
+        //print(regressionFall);
+
+    }
+
+    private static void print(RegressionFall regressionFall) {
         System.out.println("1:" + regressionFall.getTree().getData());
 
         System.out.println("2:" + regressionFall.getTree().getChildren().get(0).getData());
@@ -57,6 +63,5 @@ public class Lab2Main {
                 .getChildren().get(0).getData());
         System.out.println("14:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(1)
                 .getChildren().get(1).getData());
-
     }
 }
