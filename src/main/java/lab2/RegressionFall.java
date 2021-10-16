@@ -1,6 +1,5 @@
 package lab2;
 
-import com.sun.source.tree.Tree;
 import lab1.ELexType;
 import lab1.Lex;
 
@@ -11,6 +10,10 @@ public class RegressionFall {
     private final List<Lex> lexes;
     private int curLex = 0;
     private TreeNode<Lex> tree;
+
+    public TreeNode<Lex> getTree() {
+        return tree.getChildren().get(0);
+    }
 
     public RegressionFall(List<Lex> lexes) {
         this.lexes = lexes;
@@ -29,10 +32,11 @@ public class RegressionFall {
             Error("Ожидается do", lexes.get(curLex).getPos());
             return false;
         }
-        this.tree = new TreeNode<>(lexes.get(curLex));
+        tree = new TreeNode<>(new Lex());
+        tree.addChild(lexes.get(curLex));
         curLex++;
 
-        if (!Statement(tree)) return false;
+        if (!Statement(tree.getChildren().get(0))) return false;
 
         if (curLex >= lexes.size()) {
             Error("Ожидается loop");
@@ -51,10 +55,11 @@ public class RegressionFall {
             Error("Ожидается while", lexes.get(curLex).getPos());
             return false;
         }
-        TreeNode<Lex> whileNode = this.tree.addChild(lexes.get(curLex));
+        tree.getChildren().get(0).addChild(lexes.get(curLex));
         curLex++;
 
-        if (!Condition(whileNode)) return false;
+        if (!Condition()) return false;
+        tree.getChildren().get(0).getChildren().get(1).addChild(tempConditions);
 
         if (curLex < lexes.size()) {
             Error("Лишние символы", lexes.get(curLex).getPos());
@@ -64,29 +69,56 @@ public class RegressionFall {
         return true;
     }
 
-    private boolean Condition(TreeNode<Lex> whileNode) {
+    private TreeNode<Lex> tempConditions;
+
+    private boolean Condition() {
         if (!LogExpr()) return false;
+
+        if (curLex >= lexes.size() || lexes.get(curLex).getELexType() != ELexType.lOr) {
+            tempConditions = tempLogExpr;
+            return true;
+        }
+
+        tempConditions = new TreeNode<>(lexes.get(curLex));
         while (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lOr) {
+            tempConditions.addChild(tempLogExpr);
             curLex++;
             if (!LogExpr()) return false;
+            tempConditions.addChild(tempLogExpr);
         }
         return true;
     }
+
+    private TreeNode<Lex> tempLogExpr;
 
     private boolean LogExpr() {
         if (!RelExpr()) return false;
+
+        if (curLex >= lexes.size() || lexes.get(curLex).getELexType() != ELexType.lAnd) {
+            tempLogExpr = tempRelExpr;
+            return true;
+        }
+
+        tempLogExpr = new TreeNode<>(lexes.get(curLex));
         while (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lAnd) {
+            tempLogExpr.addChild(tempRelExpr);
             curLex++;
             if (!RelExpr()) return false;
+            tempLogExpr.addChild(tempRelExpr);
         }
         return true;
     }
 
+    private TreeNode<Lex> tempRelExpr;
+
     private boolean RelExpr() {
         if (!Operand()) return false;
-        if (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lRel){
+        if (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lRel) {
+            tempRelExpr = new TreeNode<>(lexes.get(curLex));
+            tempRelExpr.addChild(lexes.get(curLex - 1));
             curLex++;
             if (!Operand()) return false;
+            tempRelExpr.addChild(lexes.get(curLex - 1));
         }
         return true;
     }
@@ -138,7 +170,7 @@ public class RegressionFall {
             return false;
         }
         tree.addChild(lexes.get(curLex));
-        TreeNode<Lex> asNode = tree.children.get(0);
+        TreeNode<Lex> asNode = tree.getChildren().get(0);
         asNode.addChild(lexes.get(curLex - 1));
 
         curLex++;
@@ -150,24 +182,24 @@ public class RegressionFall {
         if (!Operand()) return false;
 
         if (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lAo) {
-            tree.addChild(lexes.get(curLex - 1));
-            tree.children.get(0).addChild(lexes.get(curLex - 1));
+            tree.addChild(lexes.get(curLex));
+            tree.getChildren().get(1).addChild(lexes.get(curLex - 1));
         } else {
             tree.addChild(lexes.get(curLex - 1));
         }
-        TreeNode<Lex> aoNode = tree.children.get(0);
+        TreeNode<Lex> aoNode = tree.getChildren().get(1);
 
         while (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lAo) {
             curLex++;
             if (!Operand()) return false;
 
             if (curLex < lexes.size() && lexes.get(curLex).getELexType() == ELexType.lAo) {
-                aoNode.addChild(lexes.get(curLex - 1));
-                aoNode.children.get(0).addChild(lexes.get(curLex - 1));
+                aoNode.addChild(lexes.get(curLex));
+                aoNode.getChildren().get(1).addChild(lexes.get(curLex - 1));
             } else {
                 aoNode.addChild(lexes.get(curLex - 1));
             }
-            aoNode = aoNode.children.get(0);
+            aoNode = aoNode.getChildren().get(1);
         }
 
         return true;

@@ -30,5 +30,33 @@ public class Lab2Main {
         } else {
             System.out.println("Синтаксический анализ произошел с ошибками.");
         }
+        System.out.println("1:" + regressionFall.getTree().getData());
+
+        System.out.println("2:" + regressionFall.getTree().getChildren().get(0).getData());
+
+        System.out.println("3:" + regressionFall.getTree().getChildren().get(0).getChildren().get(0).getData());
+        System.out.println("4:" + regressionFall.getTree().getChildren().get(0).getChildren().get(1).getData());
+
+        System.out.println("5:" + regressionFall.getTree().getChildren().get(0).getChildren().get(1).getChildren().get(0).getData());
+        System.out.println("6:" + regressionFall.getTree().getChildren().get(0).getChildren().get(1).getChildren().get(1).getData());
+
+        System.out.println("7:" + regressionFall.getTree().getChildren().get(1).getData());
+
+        System.out.println("8:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getData());
+
+        System.out.println("9:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(0).getData());
+
+        System.out.println("10:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(0)
+                .getChildren().get(0).getData());
+        System.out.println("11:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(0)
+                .getChildren().get(1).getData());
+
+        System.out.println("12:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(1).getData());
+
+        System.out.println("13:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(1)
+                .getChildren().get(0).getData());
+        System.out.println("14:" + regressionFall.getTree().getChildren().get(1).getChildren().get(0).getChildren().get(1)
+                .getChildren().get(1).getData());
+
     }
 }
