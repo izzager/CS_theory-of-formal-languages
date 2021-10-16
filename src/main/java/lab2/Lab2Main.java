@@ -27,10 +27,10 @@ public class Lab2Main {
         boolean regressionFallResult = regressionFall.begin();
         if (regressionFallResult) {
             System.out.println("Синтаксический анализ успешен.");
+            regressionFall.getTree().traverseTree();
         } else {
             System.out.println("Синтаксический анализ произошел с ошибками.");
         }
-        regressionFall.getTree().traverseTree();
         //print(regressionFall);
 
     }
