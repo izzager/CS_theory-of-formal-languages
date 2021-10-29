@@ -1,7 +1,11 @@
 package lab3;
 
+import lab1.Lex;
+import lab1.LexAnalysis;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Poliz {
 
@@ -39,6 +43,25 @@ public class Poliz {
         postfixEntries.get(ind).setIndex(ptr);
     }
 
+    public static String writePretty(LexAnalysis lexAnalysis) {
+        StringBuilder result = new StringBuilder();
+        for (PostfixEntry postfixEntry : postfixEntries) {
+            if (postfixEntry.getType() == EEntryType.etVar || postfixEntry.getType() == EEntryType.etConst) {
+                List<String> entry = lexAnalysis.getLexes().stream()
+                        .filter(lex -> lex.getPos() == postfixEntry.getIndex())
+                        .map(Lex::getContent)
+                        .collect(Collectors.toList());
+                result.append(entry.get(0));
+            } else if (postfixEntry.getType() == EEntryType.etCmdPtr) {
+                result.append(postfixEntry.getIndex());
+            } else {
+                result.append(findCmdByNumber(postfixEntry.getIndex()));
+            }
+            result.append(" ");
+        }
+        return result.toString();
+    }
+
     private static int findCmdNumber(ECmd cmd) {
         int i = 0;
         for (ECmd cmd1 : ECmd.values()) {
@@ -49,6 +72,18 @@ public class Poliz {
             }
         }
         return 0;
+    }
+
+    private static ECmd findCmdByNumber(int number) {
+        int i = 0;
+        for (ECmd cmd : ECmd.values()) {
+            if (i < number) {
+                i++;
+            } else {
+                return cmd;
+            }
+        }
+        return ECmd.JZ;
     }
 
 }

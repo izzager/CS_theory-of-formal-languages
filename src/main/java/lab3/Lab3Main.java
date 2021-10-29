@@ -33,5 +33,8 @@ public class Lab3Main {
 
         System.out.println("Внутреннее представление программы:");
         Poliz.getPostfixEntries().forEach(System.out::println);
+        System.out.println();
+
+        System.out.println(Poliz.writePretty(lexAnalysis));
     }
 }

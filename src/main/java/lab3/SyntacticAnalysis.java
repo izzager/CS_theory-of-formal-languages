@@ -64,8 +64,9 @@ public class SyntacticAnalysis {
         if (!Condition()) return false;
         tree.getChildren().get(0).getChildren().get(1).addChild(tempConditions);
         // сформирована часть ПОЛИЗа, вычисляющая условие цикла
+        Poliz.writeCmd(ECmd.NOT); //заносим отрицание, т.к. условный переход по лжи
         Poliz.writeCmdPtr(indFirst); //заносим значение адреса условного перехода
-        Poliz.writeCmd(ECmd.JZ); // заносим команду условного перехода
+        Poliz.writeCmd(ECmd.JZ); // заносим команду условного перехода по лжи
 
         if (curLex < lexes.size()) {
             Error("Лишние символы", lexes.get(curLex).getPos());
