@@ -45,13 +45,13 @@ public class Poliz {
 
     public static String writePretty(LexAnalysis lexAnalysis) {
         StringBuilder result = new StringBuilder();
+        List<Lex> varTable = lexAnalysis.getVars();
+        List<Lex> constTable = lexAnalysis.getConsts();
         for (PostfixEntry postfixEntry : postfixEntries) {
-            if (postfixEntry.getType() == EEntryType.etVar || postfixEntry.getType() == EEntryType.etConst) {
-                List<String> entry = lexAnalysis.getLexes().stream()
-                        .filter(lex -> lex.getPos() == postfixEntry.getIndex())
-                        .map(Lex::getContent)
-                        .collect(Collectors.toList());
-                result.append(entry.get(0));
+            if (postfixEntry.getType() == EEntryType.etVar) {
+                result.append(varTable.get(postfixEntry.getIndex()).getContent());
+            } else if (postfixEntry.getType() == EEntryType.etConst) {
+                result.append(constTable.get(postfixEntry.getIndex()).getContent());
             } else if (postfixEntry.getType() == EEntryType.etCmdPtr) {
                 result.append(postfixEntry.getIndex());
             } else {

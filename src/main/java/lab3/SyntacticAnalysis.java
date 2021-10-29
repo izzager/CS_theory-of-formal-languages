@@ -2,6 +2,7 @@ package lab3;
 
 import lab1.ELexType;
 import lab1.Lex;
+import lab1.LexAnalysis;
 import lab2.TreeNode;
 
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 public class SyntacticAnalysis {
 
     private final List<Lex> lexes;
+    private final List<Lex> varTable;
+    private final List<Lex> constTable;
     private int curLex = 0;
     private TreeNode<Lex> tree;
 
@@ -16,8 +19,10 @@ public class SyntacticAnalysis {
         return tree.getChildren().get(0);
     }
 
-    public SyntacticAnalysis(List<Lex> lexes) {
-        this.lexes = lexes;
+    public SyntacticAnalysis(LexAnalysis lexAnalysis) {
+        this.lexes = lexAnalysis.getLexes();
+        this.varTable = lexAnalysis.getVars();
+        this.constTable = lexAnalysis.getConsts();
     }
 
     public boolean begin() {
@@ -165,10 +170,10 @@ public class SyntacticAnalysis {
             Error("Ожидается переменная или константа", lexes.get(curLex).getPos());
             return false;
         }
-        if (lexes.get(curLex).getELexType() == ELexType.lVar) {
-            Poliz.writeVar(lexes.get(curLex).getPos()); // тип лексемы – переменная
-        } else {
-            Poliz.writeConst(lexes.get(curLex).getPos()); // тип лексемы - константа
+        if (lexes.get(curLex).getELexType() == ELexType.lVar) { // тип лексемы – переменная
+            Poliz.writeVar(findVarIndexInTable());
+        } else { // тип лексемы - константа
+            Poliz.writeConst(findConstIndexInTable());
         }
         curLex++;
         return true;
@@ -183,7 +188,7 @@ public class SyntacticAnalysis {
             Error("Ожидается переменная", lexes.get(curLex).getPos());
             return false;
         }
-        Poliz.writeVar(lexes.get(curLex).getPos()); // заносим в ПОЛИЗ переменную
+        Poliz.writeVar(findVarIndexInTable()); // заносим в ПОЛИЗ переменную
         curLex++;
         if (curLex >= lexes.size()) {
             Error("Ожидается присваивание");
@@ -264,5 +269,27 @@ public class SyntacticAnalysis {
                     + lexes.get(lexes.size() - 1).getContent().length();
         }
         Error(errorMessage, pos);
+    }
+
+    private int findVarIndexInTable() {
+        int i = 0;
+        for (Lex varLex : varTable) {
+            if (varLex.getContent().equals(lexes.get(curLex).getContent())) {
+                break;
+            }
+            i++;
+        }
+        return i;
+    }
+
+    private int findConstIndexInTable() {
+        int i = 0;
+        for (Lex constLex : constTable) {
+            if (constLex.getContent().equals(lexes.get(curLex).getContent())) {
+                break;
+            }
+            i++;
+        }
+        return i;
     }
 }

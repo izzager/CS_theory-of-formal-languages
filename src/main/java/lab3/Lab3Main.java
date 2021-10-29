@@ -22,7 +22,7 @@ public class Lab3Main {
             return;
         }
 
-        SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis(lexAnalysis.getLexes());
+        SyntacticAnalysis syntacticAnalysis = new SyntacticAnalysis(lexAnalysis);
         boolean syntacsisAnalysisResult = syntacticAnalysis.begin();
         if (syntacsisAnalysisResult) {
             System.out.println("Синтаксический анализ успешен.");
