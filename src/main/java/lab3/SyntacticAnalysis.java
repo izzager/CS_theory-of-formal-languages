@@ -19,6 +19,14 @@ public class SyntacticAnalysis {
         return tree.getChildren().get(0);
     }
 
+    public List<Lex> getVarTable() {
+        return varTable;
+    }
+
+    public List<Lex> getConstTable() {
+        return constTable;
+    }
+
     public SyntacticAnalysis(LexAnalysis lexAnalysis) {
         this.lexes = lexAnalysis.getLexes();
         this.varTable = lexAnalysis.getVars();
@@ -271,7 +279,7 @@ public class SyntacticAnalysis {
         Error(errorMessage, pos);
     }
 
-    private int findVarIndexInTable() {
+    public int findVarIndexInTable() {
         int i = 0;
         for (Lex varLex : varTable) {
             if (varLex.getContent().equals(lexes.get(curLex).getContent())) {
@@ -282,7 +290,7 @@ public class SyntacticAnalysis {
         return i;
     }
 
-    private int findConstIndexInTable() {
+    public int findConstIndexInTable() {
         int i = 0;
         for (Lex constLex : constTable) {
             if (constLex.getContent().equals(lexes.get(curLex).getContent())) {
